@@ -55,6 +55,40 @@ $(function() {
         },
         getAllStudents: function () {
             return  model.studentNames();
+        },
+        getAttendance: function () {
+            return model.attendance;
+        },
+        updateCheckbox: function () {
+            var attendance = this.getAttendance();
+            $.each(attendance, function(name, days) { // function(index, element){
+                console.log(name, days);
+                var studentRow = $('tbody .name-col:contains("' + name + '")').parent('tr'),
+                    dayChecks = $(studentRow).children('.attend-col').children('input');
+                dayMissed = $(studentRow).children('.missed-col');
+
+                dayChecks.each(function(i) {
+                    $(this).prop('checked', days[i]);//days[i] = [true,false,...][i]
+                });
+
+            });
+        },
+        countMissing: function () {
+            var $allMissed = $('tbody .missed-col');
+
+            $allMissed.each(function() {
+                var studentRow = $(this).parent('tr'),
+                    dayChecks = $(studentRow).children('td').children('input'),
+                    numMissed = 0;
+
+                dayChecks.each(function() {
+                    if (!$(this).prop('checked')) {
+                        numMissed++;
+                    }
+                });
+
+                $(this).text(numMissed);
+            });
         }
 
     };
@@ -80,6 +114,9 @@ $(function() {
                 $("tbody .name-col").after('<td class="attend-col"><input type="checkbox"></td>');
 
             }
+            // Check boxes, based on attendace records
+            controller.updateCheckbox();
+            controller.countMissing();
         }
     };
 
