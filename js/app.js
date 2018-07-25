@@ -1,5 +1,5 @@
 /**
- * Created by sjonl on 23-07-2018.
+ * Created by sjonl on 25-07-2018.
  */
 /* STUDENTS IGNORE THIS FUNCTION
  * All this does is create an initial
@@ -32,56 +32,51 @@
 
 /* STUDENT APPLICATION */
 $(function() {
-    var attendance = JSON.parse(localStorage.attendance),
-        $allMissed = $('tbody .missed-col'),
-        $allCheckboxes = $('tbody input');
 
-    // Count a student's missed days
-    function countMissing() {
-        $allMissed.each(function() {
-            var studentRow = $(this).parent('tr'),
-                dayChecks = $(studentRow).children('td').children('input'),
-                numMissed = 0;
+    var model = {
 
-            dayChecks.each(function() {
-                if (!$(this).prop('checked')) {
-                    numMissed++;
-                }
+        init: function () {
+            this.attendance = JSON.parse(localStorage.attendance);
+            this.names = Object.keys(this.attendance);
+            // console.log(this.attendance);
+            // console.log(this.names);
+            // console.log(this.attendance[this.names[0]])
+        },
+        studentNames: function () {
+            return this.names
+        }
+
+    };
+
+    var controller = {
+        init: function () {
+            model.init();
+            view.init();
+        },
+        getAllStudents: function () {
+            return  model.studentNames();
+        }
+
+    };
+
+    var view = {
+        init: function () {
+            this.students = controller.getAllStudents();
+            this.studentsTemplate = $('script[data-template="student"]').html();
+            this.tbody = $("tbody");
+            view.render();
+        },
+        render: function () {
+            var students = this.students,
+                studentsTemplate = this.studentsTemplate,
+                tbody = this.tbody;
+            students.forEach(function (names) {
+                // console.log(names);
+                var newTemplate = studentsTemplate.replace(/{{name}}/g,names);
+                tbody.append(newTemplate);
             });
+        }
+    };
 
-            $(this).text(numMissed);
-        });
-    }
-
-    // Check boxes, based on attendace records
-    $.each(attendance, function(name, days) {
-        var studentRow = $('tbody .name-col:contains("' + name + '")').parent('tr'),
-            dayChecks = $(studentRow).children('.attend-col').children('input');
-
-        dayChecks.each(function(i) {
-            $(this).prop('checked', days[i]);
-        });
-    });
-
-    // When a checkbox is clicked, update localStorage
-    $allCheckboxes.on('click', function() {
-        var studentRows = $('tbody .student'),
-            newAttendance = {};
-
-        studentRows.each(function() {
-            var name = $(this).children('.name-col').text(),
-                $allCheckboxes = $(this).children('td').children('input');
-
-            newAttendance[name] = [];
-
-            $allCheckboxes.each(function() {
-                newAttendance[name].push($(this).prop('checked'));
-            });
-        });
-
-        countMissing();
-        localStorage.attendance = JSON.stringify(newAttendance);
-    });
-
-    countMissing();
+    controller.init();
 }());
