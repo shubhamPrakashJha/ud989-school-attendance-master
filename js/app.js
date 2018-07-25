@@ -75,6 +75,11 @@ $(function() {
                 var newTemplate = studentsTemplate.replace(/{{name}}/g,names);
                 tbody.append(newTemplate);
             });
+            for(var i=1; i<=12;i++){
+                $("thead .name-col").after("<th>"+(13-i)+"</th>");
+                $("tbody .name-col").after('<td class="attend-col"><input type="checkbox"></td>');
+
+            }
         }
     };
 
