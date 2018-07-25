@@ -89,6 +89,30 @@ $(function() {
 
                 $(this).text(numMissed);
             });
+        },
+        updateLocalStorage: function () {
+            // When a checkbox is clicked, update localStorage
+            var $allCheckboxes = $('tbody input');
+            $allCheckboxes.on('click', function() {
+                // alert("hello");
+                var studentRows = $('tbody .student'),
+                    newAttendance = {};
+
+                studentRows.each(function() {
+                    var name = $(this).children('.name-col').text(),
+                        $allCheckboxes = $(this).children('td').children('input');
+
+                    newAttendance[name] = [];
+
+                    $allCheckboxes.each(function() {
+                        newAttendance[name].push($(this).prop('checked'));
+                    });
+                });
+
+                controller.countMissing();
+                localStorage.attendance = JSON.stringify(newAttendance);
+            });
+
         }
 
     };
@@ -117,6 +141,7 @@ $(function() {
             // Check boxes, based on attendace records
             controller.updateCheckbox();
             controller.countMissing();
+            controller.updateLocalStorage();
         }
     };
 
